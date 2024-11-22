@@ -10,6 +10,13 @@ namespace CoinsActivity
     public partial class Form1 : Form
     {
         Bitmap loaded;
+
+        const double cent_5 = 0.05;  
+        const double cent_10 = 0.1; 
+        const double cent_25 = 0.25;
+        const double one_peso = 1.0;
+        const double five_peso = 5.0;
+
         public Form1()
         {
             InitializeComponent();
@@ -22,7 +29,7 @@ namespace CoinsActivity
 
         private void openFileDialog1_FileOk(object sender, CancelEventArgs e)
         {
-            loaded= new Bitmap(openFileDialog1.FileName);
+            loaded = new Bitmap(openFileDialog1.FileName);
             pictureBox1.Image = loaded;
         }
 
@@ -48,19 +55,49 @@ namespace CoinsActivity
                 Cv2.FindContours(edges, out contours, out hierarchy, RetrievalModes.External, ContourApproximationModes.ApproxSimple);
 
                 int coinCount = 0;
+                double totalValue = 0.0;
+                int cent_5_ctr = 0, cent_10_ctr = 0, cent_25_ctr =0, cinco_ctr =0,piso_ctr = 0;
+
                 foreach (var contour in contours)
                 {
                     double area = Cv2.ContourArea(contour);
+                    Console.WriteLine(area);
                     if (area > 100) 
                     {
                         coinCount++;
+
+                        if (area >=2600 && area < 2800)
+                        {
+                            cent_5_ctr++;
+                            totalValue += cent_5; 
+                        }
+                        else if (area >= 3100 && area < 3300)
+                        {
+                            cent_10_ctr++;
+                            totalValue += cent_10;
+                        }
+                        else if (area >= 4300 && area < 4600)
+                        {
+                            cent_25_ctr++;
+                            totalValue += cent_25;
+                        }else if(area >= 6200 && area < 6400)
+                        {
+                            piso_ctr++;
+                            totalValue += one_peso;
+                        }else if(area >= 7800 && area < 8100)
+                        {
+                            cinco_ctr++;
+                            totalValue += five_peso;
+                        }
                     }
                 }
-                label3.Text = coinCount.ToString();
+
+                Console.WriteLine($"{cent_5_ctr}'\n'{cent_10_ctr}'\n'{cent_25_ctr}'\n'{piso_ctr}'\n'{cinco_ctr}");
+                label3.Text = $"Coins: {coinCount}\nValue: {totalValue:C2}";
             }
             else
             {
-                label3.Text = "0";
+                label3.Text = "Coins: 0\nValue: $0.00";
             }
         }
     }
